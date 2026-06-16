@@ -363,6 +363,8 @@ export default function Testimonials() {
       <Dialog 
         open={openModal} 
         onClose={handleCloseModal}
+        fullWidth
+        maxWidth="sm"
         PaperProps={{
           sx: {
             backgroundColor: '#071527',
@@ -370,7 +372,7 @@ export default function Testimonials() {
             border: '1px solid rgba(157, 187, 255, 0.15)',
             borderRadius: '16px',
             color: '#FFFFFF',
-            minWidth: { xs: '300px', sm: '500px' }
+            m: 2 // add a bit of margin so it doesn't touch the edges
           }
         }}
       >

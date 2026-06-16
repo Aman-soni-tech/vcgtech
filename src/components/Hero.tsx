@@ -382,7 +382,8 @@ export default function Hero() {
                         fontFamily: '"JetBrains Mono", monospace',
                         fontSize: '0.75rem',
                         color: index === 0 || index === TYPING_LINES.length - 1 ? '#9DBBFF' : '#DCE7FF',
-                        whiteSpace: 'pre',
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word',
                       }}
                     >
                       {line}

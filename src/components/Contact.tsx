@@ -360,12 +360,13 @@ export default function Contact() {
                   </Typography>
                   <Typography
                     component="a"
-                    href="mailto:info@vidhyacode.com"
+                    href="mailto:vidhyacodegurukul12@gmail.com"
                     sx={{
                       color: '#FFE066',
                       fontWeight: 750,
                       textDecoration: 'none',
                       fontSize: '1.1rem',
+                      wordBreak: 'break-all',
                       '&:hover': { textDecoration: 'underline' },
                     }}
                   >
