@@ -1,33 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Container, Typography, Grid, Card, CardContent, Rating, Avatar, Stack, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, CircularProgress, Snackbar, Alert, AlertColor } from '@mui/material';
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
 import StarIcon from '@mui/icons-material/Star';
 import CreateIcon from '@mui/icons-material/Create';
 import { motion } from 'framer-motion';
 
-const REVIEWS_DATA = [
-  {
-    name: 'Ankit Kumar',
-    initials: 'AK',
-    role: 'Software Engineer @ TCS',
-    review: '"Vidhya Code Gurukul changed my life. I went from knowing nothing to landing a job at a top MNC within 6 months of the Full Stack course."',
-    color: '#9DBBFF', // Primary blue
-  },
-  {
-    name: 'Sneha Pandey',
-    initials: 'SP',
-    role: 'Backend Dev @ Zomato',
-    review: '"The mentors here are incredible. The way they explain complex Data Structures makes it seem so easy. Highly recommended for DSA."',
-    color: '#FFE066', // Accent yellow
-  },
-  {
-    name: 'Rohan Tyagi',
-    initials: 'RT',
-    role: 'Front-end Lead @ Start-up',
-    review: '"Practical exposure is the best part. I built 4 full-stack projects during my course which got me shortlisted for every interview I applied."',
-    color: '#ffb695', // Orange / tertiary
-  },
-];
+const AVATAR_COLORS = ['#9DBBFF', '#FFE066', '#ffb695', '#a8ff9e', '#e29eff'];
+
+const getInitials = (name: string) => {
+  if (!name) return 'S';
+  return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+};
+
+const getRandomColor = (name: string) => {
+  if (!name) return AVATAR_COLORS[0];
+  const index = name.charCodeAt(0) % AVATAR_COLORS.length;
+  return AVATAR_COLORS[index];
+};
 
 const staggerConfig = {
   hidden: {},
@@ -54,6 +43,30 @@ const fadeUpItem = {
 export default function Testimonials() {
   const [openModal, setOpenModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const res = await fetch('/.netlify/functions/get-reviews');
+        if (!res.ok) throw new Error('Failed to fetch reviews');
+        const data = await res.json();
+        
+        if (data && data.status === 'success' && Array.isArray(data.reviews)) {
+          setReviews(data.reviews);
+        } else {
+          setReviews([]);
+        }
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchReviews();
+  }, []);
   
   // Form State
   const [name, setName] = useState('');
@@ -208,6 +221,17 @@ export default function Testimonials() {
           whileInView="visible"
           viewport={{ once: true, margin: '-100px' }}
         >
+          {isLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 10 }}>
+              <CircularProgress sx={{ color: '#9DBBFF' }} />
+            </Box>
+          ) : reviews.length === 0 ? (
+            <Box sx={{ textAlign: 'center', my: 10 }}>
+              <Typography variant="h6" color="text.secondary">
+                No reviews yet. Be the first to leave one!
+              </Typography>
+            </Box>
+          ) : (
           <Box
             sx={{
               display: 'grid',
@@ -218,7 +242,12 @@ export default function Testimonials() {
               gap: 4,
             }}
           >
-            {REVIEWS_DATA.map((rev, index) => (
+            {reviews.map((rev, index) => {
+              const color = getRandomColor(rev.name || '');
+              const initials = getInitials(rev.name || '');
+              const ratingVal = parseInt(rev.rating) || 5;
+              
+              return (
               <Box key={index} sx={{ height: '100%' }}>
                 <motion.div
                   variants={fadeUpItem}
@@ -260,7 +289,7 @@ export default function Testimonials() {
                     <CardContent sx={{ p: 0, zIndex: 1, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
                       {/* Rating stars */}
                       <Stack direction="row" spacing={0.5} sx={{ mb: 2.5 }}>
-                        {[...Array(5)].map((_, i) => (
+                        {[...Array(ratingVal)].map((_, i) => (
                           <StarIcon key={i} sx={{ color: '#FFE066', fontSize: '1.25rem' }} />
                         ))}
                       </Stack>
@@ -277,7 +306,7 @@ export default function Testimonials() {
                           flexGrow: 1, // pushes student profile to bottom
                         }}
                       >
-                        {rev.review}
+                        {rev.review || rev.message}
                       </Typography>
                     </CardContent>
 
@@ -286,8 +315,8 @@ export default function Testimonials() {
                       <Avatar
                         sx={{
                           background: `rgba(157, 187, 255, 0.12)`,
-                          border: `1.5px solid ${rev.color}`,
-                          color: rev.color,
+                          border: `1.5px solid ${color}`,
+                          color: color,
                           fontFamily: '"Montserrat", sans-serif',
                           fontWeight: 800,
                           width: '48px',
@@ -295,7 +324,7 @@ export default function Testimonials() {
                           fontSize: '1rem',
                         }}
                       >
-                        {rev.initials}
+                        {initials}
                       </Avatar>
                       <Box>
                         <Typography
@@ -324,8 +353,9 @@ export default function Testimonials() {
                   </Card>
                 </motion.div>
               </Box>
-            ))}
+            )})}
           </Box>
+          )}
         </motion.div>
       </Container>
 
