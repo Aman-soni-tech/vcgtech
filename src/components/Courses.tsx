@@ -12,21 +12,21 @@ import { motion } from 'framer-motion';
 const COURSES_DATA = [
   {
     title: 'C Programming',
-    duration: '3 Months',
+    duration: '1.5 Months',
     icon: <CodeIcon sx={{ fontSize: '2.2rem' }} />,
     description: 'Master the foundation of software engineering, memory management, and structured, logical thinking.',
     isFlagship: false,
   },
   {
     title: 'C++ with DSA',
-    duration: '4 Months',
+    duration: '2 Months',
     icon: <TerminalIcon sx={{ fontSize: '2.2rem' }} />,
     description: 'Advanced algorithms, competitive programming concepts, and complex structures optimized for top product giants.',
     isFlagship: false,
   },
   {
     title: 'Java Core & Advanced',
-    duration: '5 Months',
+    duration: '4 Months',
     icon: <CoffeeIcon sx={{ fontSize: '2.2rem' }} />,
     description: 'Build secure, highly scalable enterprise-level applications with Java, multi-threading, and Spring Framework.',
     isFlagship: false,
@@ -47,7 +47,7 @@ const COURSES_DATA = [
   },
   {
     title: 'Full Stack Development',
-    duration: '6 Months',
+    duration: '4 Months',
     icon: <LayersIcon sx={{ fontSize: '2.2rem' }} />,
     description: 'Our elite flagship career program covering React, Node.js, Express, and databases for full-scale engineering roles.',
     isFlagship: true,
