@@ -3,27 +3,22 @@ import { Box, Container, Typography, Grid, Card, CardContent, Avatar, Badge, Sta
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import { motion } from 'framer-motion';
+import amanImg from '../assets/aman.png';
 
 const FACULTY_DATA = [
   {
     name: 'Aman Soni',
     role: 'Full Stack Java developer and tutor',
     experience: '3+ Years Teaching Experience',
-    specialty: 'Expert in Scalable Microservices, Cloud Containers (AWS/Azure), and distributed system design.',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAqCXxNcNT3ySv3HkXfOueG_iSJ24uLvWAE2e-vsemiD4aFugXZ76cB8rUeQozuPQq56gxK7zZXBsUzY-YTeQBwb6g4NqNXsq3nD04h_8iDue4dAyxCehnLjv2w1EbcdSC4juEqPEqwWC6SlllHf9CStSFfvbC5Exgc2pt_YiO-NHShIRfudjNE06gHpGwMNaHgbwQ2vIOdJObpT5haxOLM35bGYGtIghacc26Fd0jnJZp6lpmkNRmp',
+    specialty: 'Turning beginners into confident programmers through practical and easy-to-understand teaching.',
+    image: amanImg,
   },
+
   {
-    name: 'Priya Verma',
-    role: 'Lead Python Developer',
-    experience: '6+ Years Industry Experience',
-    specialty: 'Specialist in Data Pipelines, Predictive AI/ML Analytics, process automations, and Flask backends.',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAhMcJvHygg0n5vgQIe9bIgYDutAVbDGscU_c-zxZHrH-MrhSpWENkPs0dfsg9Ader84T2tpIsTBXdrcZXZUrts6Nl7UfRQ6a_TsxnHmODLBpbk3x0ZP7VAGJcslTIQF8_d4ZNDQ4ccXnfMw9Rt2qHoX4myrycE_gpT_DaNUvvscKDy5YeYztiT4jI1YS7jMXVpBQBtRnSUQZbaAOwz3g4693pRhDGAWJRrgh7DfTcZ2N8eRqtEuBtg',
-  },
-  {
-    name: 'Amit Pathak',
-    role: 'UI/UX Specialist',
-    experience: '5+ Years Industry Experience',
-    specialty: 'Master of React core systems, responsive UI layout theory, tailwind, CSS, and modern interactive elements.',
+    name: 'Shubham Soni',
+    role: 'Full Stack Java Developer',
+    experience: '4+ Years Industry Experience',
+    specialty: 'Master of Java core systems, ,Expert in industry , mastary in java backend',
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDC5C5-0PVBV2_5wYNThHsGY6PmNFoLvWyWSiaDiVe_bVLdzcsvREcTvLDIZm3VP7Xzb8OS0aQkANHKsOZqOpfcvLMkhit270hCISWK1yHnyVhqY56g0Zz2iubbnbFlVX6g27bwOYomViVtUx75FA9T8pPiRP4wP3eVe_l8FJvOWr5Yk1xWZJthDDEIqV5mMV2PtNpvRSN2KIUF92Lzx1KeBSg2EgIDBvRymReCkInN7SKFzFsHt7Qp',
   },
 ];
