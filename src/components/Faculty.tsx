@@ -155,9 +155,10 @@ export default function Faculty() {
                         sx={{
                           width: '100%',
                           height: '100%',
-                          objectFit: 'cover',
-                          objectPosition: 'center 15%', // Ensure faces aren't cropped
+                          objectFit: 'contain',
+                          objectPosition: 'center',
                           transition: 'transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)',
+                          backgroundColor: 'rgba(255, 255, 255, 0.02)', // slight background for letterboxing
                         }}
                       />
                       {/* Interactive Gold/Blue label tag */}
