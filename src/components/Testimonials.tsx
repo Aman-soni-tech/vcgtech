@@ -1,7 +1,8 @@
-import React from 'react';
-import { Box, Container, Typography, Grid, Card, CardContent, Rating, Avatar, Stack } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Container, Typography, Grid, Card, CardContent, Rating, Avatar, Stack, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, CircularProgress, Snackbar, Alert, AlertColor } from '@mui/material';
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
 import StarIcon from '@mui/icons-material/Star';
+import CreateIcon from '@mui/icons-material/Create';
 import { motion } from 'framer-motion';
 
 const REVIEWS_DATA = [
@@ -51,6 +52,82 @@ const fadeUpItem = {
 };
 
 export default function Testimonials() {
+  const [openModal, setOpenModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Form State
+  const [name, setName] = useState('');
+  const [role, setRole] = useState('');
+  const [rating, setRating] = useState<number | null>(5);
+  const [reviewMessage, setReviewMessage] = useState('');
+
+  // Feedback State
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState<AlertColor>('success');
+  const [formErrors, setFormErrors] = useState<{ [key: string]: boolean }>({});
+
+  const handleOpenModal = () => setOpenModal(true);
+  const handleCloseModal = () => {
+    if (!isSubmitting) setOpenModal(false);
+  };
+
+  const handleCloseSnackbar = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') return;
+    setOpenSnackbar(false);
+  };
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const errors: { [key: string]: boolean } = {};
+    if (!name.trim()) errors.name = true;
+    if (!reviewMessage.trim()) errors.reviewMessage = true;
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+
+    setIsSubmitting(true);
+    setFormErrors({});
+
+    try {
+      const response = await fetch('/.netlify/functions/submit-review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'review',
+          name,
+          role,
+          rating,
+          message: reviewMessage,
+          date: new Date().toISOString()
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to submit review');
+
+      setSnackbarSeverity('success');
+      setSnackbarMessage('Review submitted successfully! It will appear once approved.');
+      setOpenSnackbar(true);
+      
+      // Reset & Close
+      setName('');
+      setRole('');
+      setRating(5);
+      setReviewMessage('');
+      setOpenModal(false);
+    } catch (error) {
+      console.error(error);
+      setSnackbarSeverity('error');
+      setSnackbarMessage('Something went wrong. Please try again later.');
+      setOpenSnackbar(true);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <Box
       id="testimonials"
@@ -80,7 +157,7 @@ export default function Testimonials() {
 
       <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 1 }}>
         {/* Caption Header Section */}
-        <Box sx={{ textAlign: 'center', mb: { xs: 6, md: 10 } }}>
+        <Box sx={{ textAlign: 'center', mb: { xs: 6, md: 8 } }}>
           <Typography
             variant="h2"
             sx={{
@@ -92,7 +169,7 @@ export default function Testimonials() {
               WebkitTextFillColor: 'transparent',
             }}
           >
-            Success Stories
+            Student Reviews
           </Typography>
           <Typography
             variant="body1"
@@ -101,10 +178,27 @@ export default function Testimonials() {
               fontSize: { xs: '1rem', md: '1.15rem' },
               maxWidth: '600px',
               mx: 'auto',
+              mb: 4,
             }}
           >
-            From our humble classroom structures to global tech giants. Read what our alumni say.
+            Read what our alumni say about their journey. Share your own experience with us!
           </Typography>
+          
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleOpenModal}
+            startIcon={<CreateIcon />}
+            sx={{
+              borderRadius: '24px',
+              fontWeight: 700,
+              px: 4,
+              py: 1.2,
+              boxShadow: '0 8px 20px rgba(157, 187, 255, 0.2)',
+            }}
+          >
+            Write a Review
+          </Button>
         </Box>
 
         {/* Reviews Grid Stagger container */}
@@ -234,6 +328,128 @@ export default function Testimonials() {
           </Box>
         </motion.div>
       </Container>
+
+      {/* Review Submission Modal */}
+      <Dialog 
+        open={openModal} 
+        onClose={handleCloseModal}
+        PaperProps={{
+          sx: {
+            backgroundColor: '#071527',
+            backgroundImage: 'linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0) 100%)',
+            border: '1px solid rgba(157, 187, 255, 0.15)',
+            borderRadius: '16px',
+            color: '#FFFFFF',
+            minWidth: { xs: '300px', sm: '500px' }
+          }
+        }}
+      >
+        <DialogTitle sx={{ fontWeight: 800, color: '#FFE066' }}>
+          Write a Review
+        </DialogTitle>
+        <form onSubmit={handleFormSubmit}>
+          <DialogContent dividers sx={{ borderColor: 'rgba(157, 187, 255, 0.1)' }}>
+            <Stack spacing={3} sx={{ mt: 1 }}>
+              <TextField
+                fullWidth
+                label="Your Name *"
+                variant="outlined"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                error={formErrors.name}
+                helperText={formErrors.name ? "Name is required" : ""}
+                sx={{
+                  '& .MuiOutlinedInput-root': { color: '#FFFFFF', '& fieldset': { borderColor: 'rgba(157, 187, 255, 0.3)' } },
+                  '& .MuiInputLabel-root': { color: 'rgba(220, 231, 255, 0.65)' }
+                }}
+              />
+              <TextField
+                fullWidth
+                label="Your Role/Job Title (Optional)"
+                variant="outlined"
+                placeholder="e.g. Software Engineer @ TCS"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                sx={{
+                  '& .MuiOutlinedInput-root': { color: '#FFFFFF', '& fieldset': { borderColor: 'rgba(157, 187, 255, 0.3)' } },
+                  '& .MuiInputLabel-root': { color: 'rgba(220, 231, 255, 0.65)' }
+                }}
+              />
+              <Box>
+                <Typography variant="body2" sx={{ color: 'rgba(220, 231, 255, 0.65)', mb: 1 }}>Rating *</Typography>
+                <Rating
+                  value={rating}
+                  onChange={(event, newValue) => {
+                    setRating(newValue);
+                  }}
+                  sx={{ color: '#FFE066' }}
+                />
+              </Box>
+              <TextField
+                fullWidth
+                multiline
+                rows={4}
+                label="Your Review *"
+                variant="outlined"
+                value={reviewMessage}
+                onChange={(e) => setReviewMessage(e.target.value)}
+                error={formErrors.reviewMessage}
+                helperText={formErrors.reviewMessage ? "Review is required" : ""}
+                sx={{
+                  '& .MuiOutlinedInput-root': { color: '#FFFFFF', '& fieldset': { borderColor: 'rgba(157, 187, 255, 0.3)' } },
+                  '& .MuiInputLabel-root': { color: 'rgba(220, 231, 255, 0.65)' }
+                }}
+              />
+            </Stack>
+          </DialogContent>
+          <DialogActions sx={{ p: 3 }}>
+            <Button 
+              onClick={handleCloseModal} 
+              disabled={isSubmitting}
+              sx={{ color: 'rgba(220, 231, 255, 0.7)' }}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={isSubmitting}
+              startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : null}
+              sx={{ borderRadius: '8px', fontWeight: 700 }}
+            >
+              Submit Review
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+
+      {/* Snackbar Alert */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{
+            width: '100%',
+            backgroundColor: snackbarSeverity === 'success' ? '#071527' : '#2A0B12',
+            color: '#FFFFFF',
+            border: snackbarSeverity === 'success' ? '2.5px solid #25D366' : '2.5px solid #D32F2F',
+            borderRadius: '16px',
+            fontSize: '1rem',
+            fontFamily: '"Montserrat", sans-serif',
+            fontWeight: 700,
+            boxShadow: '0 12px 30px rgba(0,0,0,0.5)',
+          }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
