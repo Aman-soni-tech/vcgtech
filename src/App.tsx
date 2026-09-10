@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box } from '@mui/material';
+
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Features from './components/Features';
@@ -12,49 +13,45 @@ import Testimonials from './components/Testimonials';
 import CTA from './components/CTA';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
+import CertificateVerify from './components/CertificateVerify';
+
 import theme from './theme';
 
 export default function App() {
+  const path = window.location.pathname;
+
+  // Certificate verification page
+  if (path === '/verify' || path.startsWith('/verify/')) {
+    return (
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <CertificateVerify />
+      </ThemeProvider>
+    );
+  }
+
+  // Main website
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box 
-        sx={{ 
-          backgroundColor: '#020B1A', 
+      <Box
+        sx={{
+          backgroundColor: '#020B1A',
           minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
-          overflowX: 'hidden'
+          overflowX: 'hidden',
         }}
       >
-        {/* Navigation bar */}
         <Navbar />
-
-        {/* Home/Hero Intro block */}
         <Hero />
-
-        {/* Highlighting features panel */}
         <Features />
-
-        {/* Academic Course selection */}
         <Courses />
-
-        {/* Detailed institution values checklist */}
         <About />
-
-        {/* Lead faculty cards */}
         <Faculty />
-
-        {/* Student testimonial list */}
         <Testimonials />
-
-        {/* Dynamic call to action prompt */}
         <CTA />
-
-        {/* Direct response feedback form */}
         <Contact />
-
-        {/* System Footer information */}
         <Footer />
       </Box>
     </ThemeProvider>
