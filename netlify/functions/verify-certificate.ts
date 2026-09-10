@@ -1,5 +1,4 @@
 import { getDatabase } from '@netlify/database';
-import type { Handler } from '@netlify/functions';
 
 interface Certificate {
   certificate_id: string;
@@ -11,34 +10,33 @@ interface Certificate {
   created_at: string;
 }
 
-export const handler: Handler = async (event) => {
-  if (event.httpMethod !== 'GET') {
-    return {
-      statusCode: 405,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+export default async (req: Request) => {
+  // Only allow GET
+  if (req.method !== 'GET') {
+    return Response.json(
+      {
         message: 'Method Not Allowed',
-      }),
-    };
+      },
+      { status: 405 }
+    );
   }
 
-  const certificateId = event.queryStringParameters?.id?.trim();
+  // Get certificate ID from URL
+  const url = new URL(req.url);
+  const certificateId = url.searchParams.get('id')?.trim();
 
   if (!certificateId) {
-    return {
-      statusCode: 400,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    return Response.json(
+      {
+        valid: false,
         message: 'Certificate ID is required.',
-      }),
-    };
+      },
+      { status: 400 }
+    );
   }
 
   try {
+    // Netlify automatically configures the database
     const db = getDatabase();
 
     const rows = await db.sql<Certificate>`
@@ -55,42 +53,40 @@ export const handler: Handler = async (event) => {
       LIMIT 1
     `;
 
+    // Certificate does not exist
     if (rows.length === 0) {
-      return {
-        statusCode: 404,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      return Response.json(
+        {
           valid: false,
           message: 'Certificate not found.',
-        }),
-      };
+        },
+        { status: 404 }
+      );
     }
 
     const certificate = rows[0];
 
-    return {
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
+    return Response.json({
+      valid: certificate.status === 'VALID',
+      certificate: {
+        certificate_id: certificate.certificate_id,
+        student_name: certificate.student_name,
+        course: certificate.course,
+        batch: certificate.batch,
+        issue_date: certificate.issue_date,
+        status: certificate.status,
+        created_at: certificate.created_at,
       },
-      body: JSON.stringify({
-        valid: certificate.status === 'VALID',
-        certificate,
-      }),
-    };
+    });
   } catch (error) {
     console.error('Certificate verification error:', error);
 
-    return {
-      statusCode: 500,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    return Response.json(
+      {
+        valid: false,
         message: 'Unable to verify certificate.',
-      }),
-    };
+      },
+      { status: 500 }
+    );
   }
 };
