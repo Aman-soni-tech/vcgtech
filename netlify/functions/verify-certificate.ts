@@ -12,7 +12,6 @@ interface Certificate {
 }
 
 export const handler: Handler = async (event) => {
-  // Only allow GET requests
   if (event.httpMethod !== 'GET') {
     return {
       statusCode: 405,
@@ -25,7 +24,6 @@ export const handler: Handler = async (event) => {
     };
   }
 
-  // Get certificate ID from URL
   const certificateId = event.queryStringParameters?.id?.trim();
 
   if (!certificateId) {
@@ -41,28 +39,8 @@ export const handler: Handler = async (event) => {
   }
 
   try {
-    // Get Netlify Database connection
-    const connectionString = process.env.NETLIFY_DB_URL;
+    const db = getDatabase();
 
-    if (!connectionString) {
-      console.error('NETLIFY_DB_URL is not available');
-
-      return {
-        statusCode: 500,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: 'Database configuration error.',
-        }),
-      };
-    }
-
-    const db = getDatabase({
-      connectionString,
-    });
-
-    // Search certificate by ID
     const rows = await db.sql<Certificate>`
       SELECT
         certificate_id,
@@ -77,7 +55,6 @@ export const handler: Handler = async (event) => {
       LIMIT 1
     `;
 
-    // Certificate not found
     if (rows.length === 0) {
       return {
         statusCode: 404,
@@ -93,7 +70,6 @@ export const handler: Handler = async (event) => {
 
     const certificate = rows[0];
 
-    // Certificate found
     return {
       statusCode: 200,
       headers: {
@@ -101,15 +77,7 @@ export const handler: Handler = async (event) => {
       },
       body: JSON.stringify({
         valid: certificate.status === 'VALID',
-        certificate: {
-          certificate_id: certificate.certificate_id,
-          student_name: certificate.student_name,
-          course: certificate.course,
-          batch: certificate.batch,
-          issue_date: certificate.issue_date,
-          status: certificate.status,
-          created_at: certificate.created_at,
-        },
+        certificate,
       }),
     };
   } catch (error) {
