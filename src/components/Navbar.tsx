@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import logoUrl from '../assets/logo.png';
 
 const NAV_ITEMS = [
@@ -42,14 +42,19 @@ export default function Navbar() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
 
-      // Find active section
       const scrollPosition = window.scrollY + 100;
+
       for (const item of NAV_ITEMS) {
         const el = document.getElementById(item.target);
+
         if (el) {
           const top = el.offsetTop;
           const height = el.offsetHeight;
-          if (scrollPosition >= top && scrollPosition < top + height) {
+
+          if (
+            scrollPosition >= top &&
+            scrollPosition < top + height
+          ) {
             setActiveSection(item.target);
             break;
           }
@@ -58,6 +63,7 @@ export default function Navbar() {
     };
 
     window.addEventListener('scroll', handleScroll);
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -67,10 +73,20 @@ export default function Navbar() {
 
   const handleNavClick = (target: string) => {
     setMobileOpen(false);
+
     const el = document.getElementById(target);
+
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      el.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
     }
+  };
+
+  const handleVerifyClick = () => {
+    setMobileOpen(false);
+    window.location.href = '/verify';
   };
 
   return (
@@ -86,12 +102,20 @@ export default function Navbar() {
           borderBottom: scrolled
             ? '1px solid rgba(157, 187, 255, 0.15)'
             : '1px solid rgba(157, 187, 255, 0.05)',
-          boxShadow: scrolled ? '0 10px 30px rgba(0,0,0,0.4)' : 'none',
+          boxShadow: scrolled
+            ? '0 10px 30px rgba(0,0,0,0.4)'
+            : 'none',
           transition: 'all 0.3s ease-in-out',
         }}
       >
         <Container maxWidth="xl">
-          <Toolbar disableGutters sx={{ justifyContent: 'space-between', height: '76px' }}>
+          <Toolbar
+            disableGutters
+            sx={{
+              justifyContent: 'space-between',
+              height: '76px',
+            }}
+          >
             {/* Logo */}
             <Box
               component="a"
@@ -116,17 +140,23 @@ export default function Navbar() {
                   height: { xs: '38px', md: '44px' },
                   width: 'auto',
                   borderRadius: '4px',
-                  boxShadow: '0 0 10px rgba(157, 187, 255, 0.3)',
+                  boxShadow:
+                    '0 0 10px rgba(157, 187, 255, 0.3)',
                 }}
               />
+
               <Typography
                 variant="h6"
                 noWrap
                 sx={{
                   fontWeight: 900,
-                  fontSize: { xs: '1.1rem', md: '1.4rem' },
+                  fontSize: {
+                    xs: '1.1rem',
+                    md: '1.4rem',
+                  },
                   fontFamily: '"Montserrat", sans-serif',
-                  background: 'linear-gradient(45deg, #FFFFFF 30%, #FFE066 90%)',
+                  background:
+                    'linear-gradient(45deg, #FFFFFF 30%, #FFE066 90%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                 }}
@@ -135,17 +165,29 @@ export default function Navbar() {
               </Typography>
             </Box>
 
-            {/* Desktop Navigation Links */}
+            {/* Desktop Navigation */}
             {!isMobile && (
-              <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: 1.5,
+                  alignItems: 'center',
+                }}
+              >
                 {NAV_ITEMS.map((item) => {
-                  const isActive = activeSection === item.target;
+                  const isActive =
+                    activeSection === item.target;
+
                   return (
                     <Button
                       key={item.target}
-                      onClick={() => handleNavClick(item.target)}
+                      onClick={() =>
+                        handleNavClick(item.target)
+                      }
                       sx={{
-                        color: isActive ? '#9DBBFF' : '#DCE7FF',
+                        color: isActive
+                          ? '#9DBBFF'
+                          : '#DCE7FF',
                         fontWeight: 600,
                         position: 'relative',
                         px: 1.5,
@@ -158,6 +200,7 @@ export default function Navbar() {
                       }}
                     >
                       {item.label}
+
                       {isActive && (
                         <motion.div
                           layoutId="activeUnderline"
@@ -167,7 +210,8 @@ export default function Navbar() {
                             left: 12,
                             right: 12,
                             height: '2px',
-                            background: 'linear-gradient(90deg, #9DBBFF, #FFE066)',
+                            background:
+                              'linear-gradient(90deg, #9DBBFF, #FFE066)',
                             borderRadius: '2px',
                           }}
                         />
@@ -175,10 +219,33 @@ export default function Navbar() {
                     </Button>
                   );
                 })}
+
+                {/* Verify Certificate */}
+                <Button
+                  variant="outlined"
+                  onClick={handleVerifyClick}
+                  sx={{
+                    color: '#FFE066',
+                    borderColor: '#FFE066',
+                    fontWeight: 700,
+                    borderRadius: '24px',
+                    px: 2,
+                    py: 0.7,
+                    fontSize: '0.82rem',
+                    whiteSpace: 'nowrap',
+                    '&:hover': {
+                      borderColor: '#FFE066',
+                      backgroundColor:
+                        'rgba(255, 224, 102, 0.10)',
+                    },
+                  }}
+                >
+                  Verify Certificate
+                </Button>
               </Box>
             )}
 
-            {/* Desktop CTA Action Button */}
+            {/* Desktop CTA */}
             {!isMobile && (
               <Button
                 variant="contained"
@@ -190,14 +257,15 @@ export default function Navbar() {
                   borderRadius: '24px',
                   px: 3.5,
                   py: 1,
-                  boxShadow: '0 4px 15px rgba(255, 224, 102, 0.3)',
+                  boxShadow:
+                    '0 4px 15px rgba(255, 224, 102, 0.3)',
                 }}
               >
                 Join Now
               </Button>
             )}
 
-            {/* Mobile Menu Icon */}
+            {/* Mobile Menu */}
             {isMobile && (
               <IconButton
                 color="inherit"
@@ -213,25 +281,34 @@ export default function Navbar() {
         </Container>
       </AppBar>
 
-      {/* Mobile Drawer Menu */}
+      {/* Mobile Drawer */}
       <Drawer
         anchor="right"
         open={mobileOpen}
         onClose={handleDrawerToggle}
         ModalProps={{
-          keepMounted: true, // Better open performance on mobile.
+          keepMounted: true,
         }}
         sx={{
           '& .MuiDrawer-paper': {
             width: 280,
-            background: 'linear-gradient(135deg, #020B1A 0%, #071527 100%)',
-            borderLeft: '1px solid rgba(157, 187, 255, 0.15)',
+            background:
+              'linear-gradient(135deg, #020B1A 0%, #071527 100%)',
+            borderLeft:
+              '1px solid rgba(157, 187, 255, 0.15)',
             p: 3,
             boxSizing: 'border-box',
           },
         }}
       >
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mb: 4,
+          }}
+        >
           <Typography
             variant="subtitle1"
             sx={{
@@ -242,30 +319,55 @@ export default function Navbar() {
           >
             VC Gurukul
           </Typography>
-          <IconButton onClick={handleDrawerToggle} sx={{ color: '#FFFFFF' }}>
+
+          <IconButton
+            onClick={handleDrawerToggle}
+            sx={{ color: '#FFFFFF' }}
+          >
             <CloseIcon />
           </IconButton>
         </Box>
 
-        <List sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+        <List
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1,
+          }}
+        >
           {NAV_ITEMS.map((item) => {
-            const isActive = activeSection === item.target;
+            const isActive =
+              activeSection === item.target;
+
             return (
-              <ListItem key={item.target} disablePadding>
+              <ListItem
+                key={item.target}
+                disablePadding
+              >
                 <ListItemButton
-                  onClick={() => handleNavClick(item.target)}
+                  onClick={() =>
+                    handleNavClick(item.target)
+                  }
                   sx={{
                     borderRadius: '8px',
-                    backgroundColor: isActive ? 'rgba(157, 187, 255, 0.1)' : 'transparent',
-                    borderLeft: isActive ? '3px solid #FFE066' : '3px solid transparent',
+                    backgroundColor: isActive
+                      ? 'rgba(157, 187, 255, 0.1)'
+                      : 'transparent',
+                    borderLeft: isActive
+                      ? '3px solid #FFE066'
+                      : '3px solid transparent',
                   }}
                 >
                   <ListItemText
                     primary={
                       <Typography
                         sx={{
-                          color: isActive ? '#FFE066' : '#FFFFFF',
-                          fontWeight: isActive ? 700 : 500,
+                          color: isActive
+                            ? '#FFE066'
+                            : '#FFFFFF',
+                          fontWeight: isActive
+                            ? 700
+                            : 500,
                           fontSize: '0.95rem',
                         }}
                       >
@@ -277,6 +379,33 @@ export default function Navbar() {
               </ListItem>
             );
           })}
+
+          {/* Mobile Verify Certificate */}
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={handleVerifyClick}
+              sx={{
+                borderRadius: '8px',
+                border:
+                  '1px solid rgba(255, 224, 102, 0.5)',
+                mt: 1,
+              }}
+            >
+              <ListItemText
+                primary={
+                  <Typography
+                    sx={{
+                      color: '#FFE066',
+                      fontWeight: 700,
+                      fontSize: '0.95rem',
+                    }}
+                  >
+                    Verify Certificate
+                  </Typography>
+                }
+              />
+            </ListItemButton>
+          </ListItem>
         </List>
 
         <Box sx={{ mt: 'auto', pt: 4 }}>
@@ -285,7 +414,11 @@ export default function Navbar() {
             variant="contained"
             color="secondary"
             onClick={() => handleNavClick('contact')}
-            sx={{ py: 1.5, fontWeight: 700, borderRadius: '12px' }}
+            sx={{
+              py: 1.5,
+              fontWeight: 700,
+              borderRadius: '12px',
+            }}
           >
             Join Free Demo
           </Button>
