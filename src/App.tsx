@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box } from '@mui/material';
 
+import AdminCertificate from './components/AdminCertificate';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Features from './components/Features';
@@ -19,6 +20,16 @@ import theme from './theme';
 
 export default function App() {
   const path = window.location.pathname;
+
+  
+  if (path === '/admin/certificate') {
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <AdminCertificate />
+    </ThemeProvider>
+  );
+}
 
   // Certificate verification page
   if (path === '/verify' || path.startsWith('/verify/')) {
